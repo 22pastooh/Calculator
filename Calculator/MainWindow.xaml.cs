@@ -30,43 +30,103 @@ namespace Calculator
         {
             Button button = (Button)sender;
             currentInput += button.Content.ToString();
-            InputBox.Text = currentInput;
+            UpdateInputText(currentInput);
         }
 
         private void Operation_Click(object sender, RoutedEventArgs e)
         {
             Button button = (Button)sender;
-            firstNumber = double.Parse(currentInput);
-            operation = button.Content.ToString();
-            currentInput = "";
+            if (!string.IsNullOrEmpty(currentInput))
+            {
+                firstNumber = double.Parse(currentInput);
+                operation = button.Content.ToString();
+                currentInput = "";
+            }
+        }
+
+        private void Decimal_Click(object sender, RoutedEventArgs e)
+        {
+            if (!currentInput.Contains("."))
+            {
+                currentInput += ".";
+                UpdateInputText(currentInput);
+            }
         }
 
         private void Equal_Click(object sender, RoutedEventArgs e)
         {
-            double secondNumber = double.Parse(currentInput);
-            double result = 0;
-
-            switch (operation)
+            if (!string.IsNullOrEmpty(operation) && !string.IsNullOrEmpty(currentInput))
             {
-                case "+":
-                    result = firstNumber + secondNumber;
-                    break;
-                // Other cases for different operations (-, *, /) go here
+                double secondNumber = double.Parse(currentInput);
+                double result = 0;
 
-                default:
-                    break;
+                switch (operation)
+                {
+                    case "+":
+                        result = firstNumber + secondNumber;
+                        break;
+                    case "-":
+                        result = firstNumber - secondNumber;
+                        break;
+                    case "*":
+                        result = firstNumber * secondNumber;
+                        break;
+                    case "/":
+                        if (secondNumber != 0)
+                        {
+                            result = firstNumber / secondNumber;
+                        }
+                        else
+                        {
+                            MessageBox.Show("Cannot divide by zero!");
+                            UpdateInputText("Error");
+                            currentInput = "";
+                            firstNumber = 0;
+                            operation = "";
+                            return;
+                        }
+                        break;
+                    default:
+                        break;
+                }
+
+                UpdateInputText(result.ToString());
+                currentInput = result.ToString();
+                operation = "";
             }
-
-            InputBox.Text = result.ToString();
-            currentInput = result.ToString();
         }
 
         private void Clear_Click(object sender, RoutedEventArgs e)
         {
-            InputBox.Text = "";
+            UpdateInputText("");
             currentInput = "";
             firstNumber = 0;
             operation = "";
+        }
+        private void Comma_Click(object sender, RoutedEventArgs e)
+        {
+            if (!currentInput.Contains("."))
+            {
+                currentInput += ".";
+                UpdateInputText(currentInput);
+            }
+        }
+
+        private void UpdateInputText(string text)
+        {
+            InputText.Text = text;
+            if (text.Length > 10)
+            {
+                InputText.FontSize = 24;
+            }
+            else if (text.Length > 7)
+            {
+                InputText.FontSize = 32;
+            }
+            else
+            {
+                InputText.FontSize = 48;
+            }
         }
     }
 }
